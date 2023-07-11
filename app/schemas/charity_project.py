@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
+from typing import Optional
 
-from pydantic import BaseModel, Field, validator, root_validator
+from pydantic import BaseModel, Field, validator, Extra
 
 
 FROM_TIME = (
@@ -14,14 +15,24 @@ TO_TIME = (
 
 class CharityProjectBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
-    description: str = Field(..., example='На помощь бэкенд разрабам')
+    description: str = Field(..., min_length=1, example='На помощь бэкенд разрабам')
     full_amount: int = Field(..., example=100)
+
+    class Config:
+        extra = Extra.forbid
+
+
+class CharityProjectBD(CharityProjectBase):
     id: int = Field(..., example=100)
     invested_amount: int = Field(0, example=100)
     fully_invested: bool = Field(False, example=False)
     create_date: datetime = Field(..., example=FROM_TIME)
-    close_date: datetime = Field(..., example=TO_TIME)
 
+    class Config:
+        orm_mode = True
+
+
+class CharityProjectCreate(CharityProjectBase):
     @validator('name')
     def valid_name(cls, value: str):
         if value == '':
@@ -32,7 +43,11 @@ class CharityProjectBase(BaseModel):
             raise ValueError('Имя переговорки не может быть пустым!')
         return value
 
-    @root_validator(skip_on_failure=True)
-    def check_invested_amount(cls, value):
-        if value['invested_amount'] > value['full_amount']:
-            raise ValueError('Инвестированных средсв не может быть больше чем запрошено')
+    @validator('description')
+    def valid_description(cls, value: str):
+        if len(value) < 1:
+            raise ValueError('Описание проекта должно содеражть не менее одного символа')
+
+
+class CharityProjectUpdate(CharityProjectBase):
+    pass
