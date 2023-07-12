@@ -1,7 +1,6 @@
 from datetime import datetime, timedelta
-from typing import Optional
 
-from pydantic import BaseModel, Field, validator, Extra
+from pydantic import BaseModel, Field, Extra
 
 
 FROM_TIME = (
@@ -16,7 +15,7 @@ TO_TIME = (
 class CharityProjectBase(BaseModel):
     name: str = Field(..., min_length=1, max_length=100)
     description: str = Field(..., min_length=1, example='На помощь бэкенд разрабам')
-    full_amount: int = Field(gt=0)
+    full_amount: int = Field(..., gt=0, example=100000000000000000000000000000)
 
     class Config:
         extra = Extra.forbid
