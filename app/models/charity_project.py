@@ -7,7 +7,7 @@ from app.core.db import Base
 
 class CharityProject(Base):
     name = Column(String(100), unique=True, nullable=False)
-    description = Column(Text)
+    description = Column(Text, nullable=False)
     full_amount = Column(Integer, nullable=False)
     invested_amount = Column(Integer, nullable=False, default=0)
     fully_invested = Column(Boolean, default=False)

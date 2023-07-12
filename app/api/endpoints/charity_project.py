@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends
 
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.core.user import current_superuser
+from app.core.user import current_superuser, current_user
 from app.core.db import get_async_session
 from app.schemas.charity_project import (
     CharityProjectBD,
@@ -22,8 +22,7 @@ router = APIRouter()
 async def get_all_charity_project(
         session: AsyncSession = Depends(get_async_session),
 ):
-    all_project = await charity_project_crud.get_multi(session)
-    return all_project
+    return await charity_project_crud.get_multi(session)
 
 
 @router.post(

@@ -36,7 +36,7 @@ async def get_not_invested_objects(
         select(
             model_in
         ).where(
-            model_in.fully_invested == False
+            model_in.fully_invested == 0
         ).order_by(
             model_in.create_date
         )
@@ -55,10 +55,10 @@ async def execute_investment_process(
     object_in: Union[CharityProject, Donation],
     session: AsyncSession
 ):
-    db_model = (
+    model = (
         CharityProject if isinstance(object_in, Donation) else Donation
     )
-    not_invested_objects = await get_not_invested_objects(db_model, session)
+    not_invested_objects = await get_not_invested_objects(model, session)
     available_amount = object_in.full_amount
 
     if not_invested_objects:
