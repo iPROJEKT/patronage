@@ -1,6 +1,3 @@
-from typing import List
-
-from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
@@ -19,6 +16,16 @@ class CRUDBase:
         db_objects = await session.execute(select(self.model))
         return db_objects.scalars().all()
 
+    async def get_by_id(self, object_in, session: AsyncSession):
+        db_objects = await session.execute(
+            select(
+                self.model
+            ).where(
+                self.model.id == object_in
+            )
+        )
+        return db_objects.scalars().first()
+
     async def create(
             self,
             object_in,
@@ -36,3 +43,12 @@ class CRUDBase:
         await session.commit()
         await session.refresh(db_object)
         return db_object
+
+    async def remove(
+            self,
+            db_obj,
+            session: AsyncSession,
+    ):
+        await session.delete(db_obj)
+        await session.commit()
+        return db_obj

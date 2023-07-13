@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-
+from typing import Optional
 from pydantic import BaseModel, Field, Extra
 
 
@@ -26,6 +26,7 @@ class CharityProjectBD(CharityProjectBase):
     invested_amount: int = Field(0, example=100)
     fully_invested: bool
     create_date: datetime = Field(..., example=FROM_TIME)
+    close_date: Optional[datetime]
 
     class Config:
         orm_mode = True

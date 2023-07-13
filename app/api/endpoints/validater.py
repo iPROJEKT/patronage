@@ -1,15 +1,8 @@
 from http import HTTPStatus
 
-
-from datetime import datetime
-from typing import List, Union
-
-from sqlalchemy import select
 from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-
 from app.crud.charity_project import charity_project_crud
-from app.models import CharityProject, Donation
 
 
 async def check_name_duplicate(
@@ -24,58 +17,30 @@ async def check_name_duplicate(
     if charity_project_id is not None:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
-            detail=f'Проект с именем "{project_name}"уже сущесвует'
+            detail=f'Проект с таким именем уже существует!'
         )
 
 
-async def get_not_invested_objects(
-    model_in: Union[CharityProject, Donation],
+async def check_charity_project_exists(
+    project_id: int,
     session: AsyncSession
-) -> List[Union[CharityProject, Donation]]:
-    db_objects = await session.execute(
-        select(
-            model_in
-        ).where(
-            model_in.fully_invested == 0
-        ).order_by(
-            model_in.create_date
-        )
-    )
-    return db_objects.scalars().all()
-
-
-async def close_invested_object(
-    obj_to_close: Union[CharityProject, Donation],
 ) -> None:
-    obj_to_close.fully_invested = True
-    obj_to_close.close_date = datetime.now()
+    project_id = await charity_project_crud.get_by_id(project_id, session)
+    if project_id is None:
+        raise HTTPException(
+            status_code=404,
+            detail='Проекта с таким id не существует'
+        )
+    return project_id
 
 
-async def execute_investment_process(
-    object_in: Union[CharityProject, Donation],
+async def check_project_was_invested(
+    project_id: int,
     session: AsyncSession
-):
-    model = (
-        CharityProject if isinstance(object_in, Donation) else Donation
-    )
-    not_invested_objects = await get_not_invested_objects(model, session)
-    available_amount = object_in.full_amount
-
-    if not_invested_objects:
-        for not_invested_obj in not_invested_objects:
-            need_to_invest = not_invested_obj.full_amount - not_invested_obj.invested_amount
-            to_invest = (
-                need_to_invest if need_to_invest < available_amount else available_amount
-            )
-            not_invested_obj.invested_amount += to_invest
-            object_in.invested_amount += to_invest
-            available_amount -= to_invest
-
-            if not_invested_obj.full_amount == not_invested_obj.invested_amount:
-                await close_invested_object(not_invested_obj)
-
-            if not available_amount:
-                await close_invested_object(object_in)
-                break
-        await session.commit()
-    return object_in
+) -> None:
+    project_id = await charity_project_crud.get_by_id(project_id, session)
+    if project_id.invested_amount != 0:
+        raise HTTPException(
+            status_code=400,
+            detail='В проект были внесены средства, не подлежит удалению!'
+        )
