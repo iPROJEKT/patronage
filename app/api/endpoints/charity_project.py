@@ -87,7 +87,7 @@ async def patch_charity_project(
         await check_project_name_donation_updata(project_id, charity_project.full_amount, session)
     if charity_project.name is not None:
         await check_name_duplicate(charity_project.name, session)
-    project = await charity_project_crud.update(
+    return await charity_project_crud.update(
         await charity_project_crud.get_by_id(
             project_id,
             session
@@ -95,4 +95,3 @@ async def patch_charity_project(
         charity_project,
         session
     )
-    return project

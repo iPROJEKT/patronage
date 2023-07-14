@@ -53,7 +53,7 @@ async def check_project_was_closed(
     if charity_project.fully_invested:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
-            detail='Проект закрыт'
+            detail='Закрытый проект нельзя редактировать!'
         )
 
 

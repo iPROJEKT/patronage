@@ -36,5 +36,11 @@ class CharityProjectCreate(CharityProjectBase):
     pass
 
 
-class CharityProjectUpdate(CharityProjectBD):
-    pass
+class CharityProjectUpdate(BaseModel):
+    name: Optional[str] = Field(None, min_length=1, max_length=100)
+    description: Optional[str] = Field(None, min_length=1, example='На помощь бэкенд разрабам')
+    full_amount: Optional[int] = Field(None, gt=0, example=10000)
+
+    class Config:
+        extra = Extra.forbid
+
