@@ -25,22 +25,46 @@ async def check_charity_project_exists(
     project_id: int,
     session: AsyncSession
 ) -> None:
-    project_id = await charity_project_crud.get_by_id(project_id, session)
-    if project_id is None:
+    charity_project = await charity_project_crud.get_by_id(project_id, session)
+    if charity_project is None:
         raise HTTPException(
-            status_code=404,
+            status_code=HTTPStatus.NOT_FOUND,
             detail='Проекта с таким id не существует'
         )
-    return project_id
 
 
 async def check_project_was_invested(
     project_id: int,
     session: AsyncSession
 ) -> None:
-    project_id = await charity_project_crud.get_by_id(project_id, session)
-    if project_id.invested_amount != 0:
+    charity_project = await charity_project_crud.get_by_id(project_id, session)
+    if charity_project.invested_amount != 0:
         raise HTTPException(
-            status_code=400,
+            status_code=HTTPStatus.BAD_REQUEST,
             detail='В проект были внесены средства, не подлежит удалению!'
+        )
+
+
+async def check_project_was_closed(
+    project_id: int,
+    session: AsyncSession
+) -> None:
+    charity_project = await charity_project_crud.get_by_id(project_id, session)
+    if charity_project.fully_invested:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail='Проект закрыт'
+        )
+
+
+async def check_project_name_donation_updata(
+    project_id: int,
+    charity_project_full_amount,
+    session: AsyncSession
+) -> None:
+    charity_project = await charity_project_crud.get_by_id(project_id, session)
+    if charity_project.invested_amount > charity_project_full_amount:
+        raise HTTPException(
+            status_code=HTTPStatus.BAD_REQUEST,
+            detail='Нельзя менять сретсва'
         )

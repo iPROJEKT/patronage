@@ -7,9 +7,16 @@ from app.core.db import get_async_session
 from app.schemas.charity_project import (
     CharityProjectBD,
     CharityProjectCreate,
+    CharityProjectUpdate
 )
 from app.crud.charity_project import charity_project_crud
-from app.api.endpoints.validater import check_name_duplicate, check_charity_project_exists, check_project_was_invested
+from app.api.endpoints.validater import (
+    check_name_duplicate,
+    check_charity_project_exists,
+    check_project_was_invested,
+    check_project_was_closed,
+    check_project_name_donation_updata
+)
 
 router = APIRouter()
 
@@ -58,11 +65,34 @@ async def delete_charity_project(
     project_id: int,
     session: AsyncSession = Depends(get_async_session),
 ):
-    charity_project = await check_charity_project_exists(project_id, session)
+    await check_charity_project_exists(project_id, session)
     await check_project_was_invested(project_id, session)
-    charity_project = await (
-        charity_project_crud.remove(
-            charity_project, session
-        )
+    return await (charity_project_crud.remove(await charity_project_crud.get_by_id(project_id, session), session))
+
+
+@router.patch(
+    '/{project_id}',
+    response_model=CharityProjectBD,
+    dependencies=[Depends(current_superuser)],
+    response_model_exclude_none=True
+)
+async def patch_charity_project(
+    project_id: int,
+    charity_project: CharityProjectUpdate,
+    session: AsyncSession = Depends(get_async_session),
+):
+    await check_charity_project_exists(project_id, session)
+    await check_project_was_closed(project_id, session)
+    if charity_project.full_amount is not None:
+        await check_project_name_donation_updata(project_id, charity_project.full_amount, session)
+    if charity_project.name is not None:
+        await check_name_duplicate(charity_project.name, session)
+    project = await charity_project_crud.update(
+        await charity_project_crud.get_by_id(
+            project_id,
+            session
+        ),
+        charity_project,
+        session
     )
-    return charity_project
+    return project
