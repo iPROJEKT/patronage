@@ -26,7 +26,7 @@ class CharityProjectBD(CharityProjectBase):
     invested_amount: int = Field(0, example=100)
     fully_invested: bool
     create_date: datetime = Field(..., example=FROM_TIME)
-    close_date: Optional[datetime]
+    close_date: Optional[datetime] = Field(..., example=TO_TIME)
 
     class Config:
         orm_mode = True
@@ -36,7 +36,7 @@ class CharityProjectCreate(CharityProjectBase):
     pass
 
 
-class CharityProjectUpdate(BaseModel):
+class CharityProjectUpdate(CharityProjectBase):
     name: Optional[str] = Field(None, min_length=1, max_length=100)
     description: Optional[str] = Field(None, min_length=1, example='На помощь бэкенд разрабам')
     full_amount: Optional[int] = Field(None, gt=0, example=10000)

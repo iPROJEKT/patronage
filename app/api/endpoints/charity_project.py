@@ -59,7 +59,6 @@ async def create_new_charity_project(
     '/{project_id}',
     response_model=CharityProjectBD,
     dependencies=[Depends(current_superuser)],
-    response_model_exclude_none=True
 )
 async def delete_charity_project(
     project_id: int,
@@ -74,7 +73,6 @@ async def delete_charity_project(
     '/{project_id}',
     response_model=CharityProjectBD,
     dependencies=[Depends(current_superuser)],
-    response_model_exclude_none=True
 )
 async def patch_charity_project(
     project_id: int,
