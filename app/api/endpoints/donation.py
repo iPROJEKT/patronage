@@ -8,7 +8,7 @@ from app.core.user import current_superuser, current_user
 from app.crud.charity_project import charity_project_crud
 from app.crud.donation import donation_crud
 from app.schemas.donation import DonationDB, DonationCreate
-from app.models import User
+from app.models.user import User
 from app.api.endpoints.validater import check_correct_donation
 
 
