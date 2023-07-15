@@ -43,4 +43,3 @@ class CharityProjectUpdate(CharityProjectBase):
 
     class Config:
         extra = Extra.forbid
-

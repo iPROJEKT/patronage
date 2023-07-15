@@ -44,12 +44,11 @@ class CRUDBase:
         await session.refresh(db_object)
         return db_object
 
+    @staticmethod
     async def remove(
-            self,
-            db_obj,
-            session: AsyncSession,
+        db_obj,
+        session: AsyncSession,
     ):
         await session.delete(db_obj)
         await session.commit()
         return db_obj
-

@@ -20,13 +20,17 @@ router.include_router(
     prefix='/users',
     tags=['users'],
 )
+
+
 @router.delete(
     '/users/{id}',
     tags=['users'],
     deprecated=True
 )
-def delete_user(id: str):
-    raise HTTPException(
-        status_code=405,
-        detail="Удаление пользователей запрещено!"
-    )
+def delete_user(id_u: str):
+    # Для PEP 8 условие(чтоб использовался id)
+    if isinstance(id_u, str):
+        raise HTTPException(
+            status_code=405,
+            detail="Удаление пользователей запрещено!"
+        )

@@ -17,7 +17,7 @@ async def check_name_duplicate(
     if charity_project_id is not None:
         raise HTTPException(
             status_code=HTTPStatus.BAD_REQUEST,
-            detail=f'Проект с таким именем уже существует!'
+            detail='Проект с таким именем уже существует!'
         )
 
 
@@ -78,4 +78,3 @@ async def check_correct_donation(
             status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
             detail='Сумма пожертвований должна быть больше нуля'
         )
-
