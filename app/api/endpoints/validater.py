@@ -68,3 +68,14 @@ async def check_project_name_donation_updata(
             status_code=HTTPStatus.BAD_REQUEST,
             detail='Нельзя менять сретсва'
         )
+
+
+async def check_correct_donation(
+    donation_full_amount: int
+) -> None:
+    if donation_full_amount <= 0:
+        raise HTTPException(
+            status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
+            detail='Сумма пожертвований должна быть больше нуля'
+        )
+
