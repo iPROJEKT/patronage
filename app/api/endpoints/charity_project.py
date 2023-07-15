@@ -1,3 +1,5 @@
+from typing import List
+
 from fastapi import APIRouter, Depends
 
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -23,7 +25,7 @@ router = APIRouter()
 
 @router.get(
     '/',
-    response_model=list[CharityProjectBD],
+    response_model=List[CharityProjectBD],
     response_model_exclude_none=True,
 )
 async def get_all_charity_project(
