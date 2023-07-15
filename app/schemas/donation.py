@@ -1,21 +1,28 @@
-from typing import Optional
 from datetime import datetime
+from typing import Optional
 
-from pydantic import BaseModel, Field
-from app.schemas.charity_project import FROM_TIME, TO_TIME
+from pydantic import BaseModel, Extra, PositiveInt
 
 
 class DonationBase(BaseModel):
-    full_amount: int = Field(..., gt=0, example=100000000000000000000000000000)
-    comment: Optional[str] = Field(..., example='На помощь бэкенд разрабам')
-    id: int = Field(..., example=100)
-    create_date: datetime = Field(..., example=FROM_TIME)
+    full_amount: Optional[int]
+    comment: Optional[str]
+
+    class Config:
+        extra = Extra.forbid
 
 
-class DonationBD(DonationBase):
-    user_id: int = Field(..., example=100)
-    fully_invested: bool = Field(False, example=False)
-    close_date: datetime = Field(..., example=TO_TIME)
+class DonationCreate(DonationBase):
+    full_amount: int
+
+
+class DonationDB(DonationCreate):
+    id: int
+    user_id: Optional[int]
+    invested_amount: int
+    fully_invested: bool
+    create_date: datetime
+    close_date: Optional[datetime]
 
     class Config:
         orm_mode = True
