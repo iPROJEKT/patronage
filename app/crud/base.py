@@ -1,7 +1,10 @@
+from typing import List
+
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Optional
 from app.models.user import User
+from app.models.donation import Donation
 
 
 class CRUDBase:
@@ -52,3 +55,15 @@ class CRUDBase:
         await session.delete(db_obj)
         await session.commit()
         return db_obj
+
+    @staticmethod
+    async def get_donations_by_user(
+            session: AsyncSession,
+            user: User
+    ) -> List[Donation]:
+        donations = await session.execute(
+            select(Donation).where(
+                Donation.user_id == user.id
+            )
+        )
+        return donations.scalars().all()

@@ -1,12 +1,19 @@
 from datetime import datetime
 
-from sqlalchemy import Column, String, Text, Integer, Boolean, DateTime
+from sqlalchemy import Column, String, Text, Integer, Boolean, DateTime, CheckConstraint
 
 from app.core.db import Base
+from app.core.const import MAX_LEGTH_PROJEKT
 
 
 class CharityProject(Base):
-    name = Column(String(100), unique=True, nullable=False)
+    __table_args__ = (
+        CheckConstraint(
+            'full_amount > 0 ',
+            'full_amount > invested_amount'
+        ),
+    )
+    name = Column(String(MAX_LEGTH_PROJEKT), unique=True, nullable=False)
     description = Column(Text, nullable=False)
     full_amount = Column(Integer, nullable=False)
     invested_amount = Column(Integer, nullable=False, default=0)
