@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends
-
+from sqlalchemy.exc import ArgumentError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.user import current_superuser
@@ -50,9 +50,19 @@ async def create_new_charity_project(
     new_charity_project = await charity_project_crud.create(
         charity_project, session
     )
-    await charity_project_crud.execute_investment_process(
-        new_charity_project, session
-    )
+
+    try:
+        charity_project_crud.investment(
+            new_charity_project,
+            await charity_project_crud.get_not_invested_objects(
+                new_charity_project,
+                session
+            )
+        )
+    except ArgumentError:
+        await session.rollback()
+
+    await session.commit()
     await session.refresh(new_charity_project)
     return new_charity_project
 

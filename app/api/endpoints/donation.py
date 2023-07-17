@@ -2,6 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.exc import ArgumentError
 
 from app.core.db import get_async_session
 from app.core.user import current_superuser, current_user
@@ -58,6 +59,16 @@ async def create_new_donation(
     new_donation = await donation_crud.create(
         donation, session, user
     )
-    await charity_project_crud.execute_investment_process(new_donation, session)
+    try:
+        charity_project_crud.investment(
+            new_donation,
+            await charity_project_crud.get_not_invested_objects(
+                new_donation,
+                session
+            )
+        )
+    except ArgumentError:
+        await session.rollback()
+    await session.commit()
     await session.refresh(new_donation)
     return new_donation

@@ -10,6 +10,15 @@ from app.models.donation import Donation
 
 
 class CRUDCharityProject(CRUDBase):
+
+    @staticmethod
+    def get_model(
+        model
+    ):
+        return(
+            CharityProject if isinstance(model, Donation) else Donation
+        )
+
     @staticmethod
     async def update(
             db_obj,
@@ -41,56 +50,50 @@ class CRUDCharityProject(CRUDBase):
 
     @staticmethod
     async def get_not_invested_objects(
-            model_in: Union[CharityProject, Donation],
-            session: AsyncSession
+        type_obj: Union[CharityProject, Donation],
+        session: AsyncSession
     ) -> List[Union[CharityProject, Donation]]:
         db_objects = await session.execute(
             select(
-                model_in
+                CRUDCharityProject.get_model(type_obj)
             ).where(
-                model_in.fully_invested == 0
+                CRUDCharityProject.get_model(type_obj).fully_invested == 0
             ).order_by(
-                model_in.create_date
+                CRUDCharityProject.get_model(type_obj).create_date
             )
         )
         return db_objects.scalars().all()
 
     @staticmethod
-    async def close_invested_object(
-            obj_to_close: Union[CharityProject, Donation],
+    def close_invested_object(
+        obj_to_close: Union[CharityProject, Donation],
     ) -> None:
         obj_to_close.fully_invested = True
         obj_to_close.close_date = datetime.now()
 
     @staticmethod
-    async def execute_investment_process(
-            object_in: Union[CharityProject, Donation],
-            session: AsyncSession
+    def investment(
+        target: Union[CharityProject, Donation],
+        sources: Union[CharityProject, Donation]
     ):
-        model = (
-            CharityProject if isinstance(object_in, Donation) else Donation
-        )
-        not_invested_objects = await CRUDCharityProject.get_not_invested_objects(model, session)
-        available_amount = object_in.full_amount
-
-        if not_invested_objects:
-            for not_invested_obj in not_invested_objects:
+        if sources:
+            for not_invested_obj in sources:
                 need_to_invest = not_invested_obj.full_amount - not_invested_obj.invested_amount
+
                 to_invest = (
-                    need_to_invest if need_to_invest < available_amount else available_amount
+                    need_to_invest if need_to_invest < target.full_amount else target.full_amount
                 )
+
                 not_invested_obj.invested_amount += to_invest
-                object_in.invested_amount += to_invest
-                available_amount -= to_invest
+                target.invested_amount += to_invest
+                target.full_amount -= to_invest
 
                 if not_invested_obj.full_amount == not_invested_obj.invested_amount:
-                    await CRUDCharityProject.close_invested_object(not_invested_obj)
-
-                if not available_amount:
-                    await CRUDCharityProject.close_invested_object(object_in)
+                    CRUDCharityProject.close_invested_object(not_invested_obj)
+                if not target.full_amount:
+                    CRUDCharityProject.close_invested_object(target)
                     break
-            await session.commit()
-        return object_in
+        return target
 
 
 charity_project_crud = CRUDCharityProject(CharityProject)
