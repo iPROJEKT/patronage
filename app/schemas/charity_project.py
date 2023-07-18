@@ -1,6 +1,8 @@
-from datetime import datetime, timedelta
+from datetime import datetime
+
 from typing import Optional
 from pydantic import BaseModel, Field, Extra
+from sqlalchemy.orm import validates
 
 from app.core.const import (
     MIN_LEGTH_PROJEKT,
@@ -14,7 +16,7 @@ from app.core.const import (
 class CharityProjectBase(BaseModel):
     name: str = Field(min_length=MIN_LEGTH_PROJEKT, max_length=MAX_LEGTH_PROJEKT)
     description: str = Field(min_length=MIN_LEGTH_PROJEKT, example='На помощь бэкенд разрабам')
-    full_amount: int = Field(gt=0, example=10000)
+    full_amount: int = Field(example=10000)
 
     class Config:
         extra = Extra.forbid
@@ -38,7 +40,7 @@ class CharityProjectCreate(CharityProjectBase):
 class CharityProjectUpdate(CharityProjectBase):
     name: Optional[str] = Field(None, min_length=MIN_LEGTH_PROJEKT, max_length=MAX_LEGTH_PROJEKT)
     description: Optional[str] = Field(None, min_length=MIN_LEGTH_PROJEKT, example='На помощь бэкенд разрабам')
-    full_amount: Optional[int] = Field(None, gt=0, example=10000)
+    full_amount: Optional[int] = Field(None, example=10000)
 
     class Config:
         extra = Extra.forbid

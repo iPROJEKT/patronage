@@ -1,9 +1,11 @@
 from datetime import datetime
 from typing import List, Union, Optional
-
+from fastapi import Depends
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+
+from app.core.db import get_async_session
 from app.crud.base import CRUDBase
 from app.models.charity_project import CharityProject
 from app.models.donation import Donation
@@ -65,6 +67,12 @@ class CRUDCharityProject(CRUDBase):
         return db_objects.scalars().all()
 
     @staticmethod
+    async def d_session(
+        s: AsyncSession = Depends(get_async_session),
+    ):
+        await s.commit()
+
+    @staticmethod
     def close_invested_object(
         obj_to_close: Union[CharityProject, Donation],
     ) -> None:
@@ -74,7 +82,7 @@ class CRUDCharityProject(CRUDBase):
     @staticmethod
     def investment(
         target: Union[CharityProject, Donation],
-        sources: Union[CharityProject, Donation]
+        sources: List[Union[CharityProject, Donation]]
     ):
         if sources:
             for not_invested_obj in sources:
@@ -90,9 +98,11 @@ class CRUDCharityProject(CRUDBase):
 
                 if not_invested_obj.full_amount == not_invested_obj.invested_amount:
                     CRUDCharityProject.close_invested_object(not_invested_obj)
+
                 if not target.full_amount:
                     CRUDCharityProject.close_invested_object(target)
                     break
+                CRUDCharityProject.d_session()
         return target
 
 

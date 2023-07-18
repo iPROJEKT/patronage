@@ -2,7 +2,7 @@ from typing import List
 
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.exc import ArgumentError
+from sqlalchemy.exc import ArgumentError, IntegrityError
 
 from app.core.db import get_async_session
 from app.core.user import current_superuser, current_user
@@ -19,7 +19,6 @@ router = APIRouter()
 @router.get(
     '/',
     response_model=List[DonationDB],
-    dependencies=[Depends(current_superuser)],
     response_model_exclude_none=True
 )
 async def get_all_donations_superuser(
@@ -59,16 +58,14 @@ async def create_new_donation(
     new_donation = await donation_crud.create(
         donation, session, user
     )
-    try:
-        charity_project_crud.investment(
+    charity_project_crud.investment(
+        new_donation,
+        await charity_project_crud.get_not_invested_objects(
             new_donation,
-            await charity_project_crud.get_not_invested_objects(
-                new_donation,
-                session
-            )
+            session
         )
-    except ArgumentError:
-        await session.rollback()
+    )
     await session.commit()
     await session.refresh(new_donation)
+
     return new_donation

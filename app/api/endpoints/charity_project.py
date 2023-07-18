@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import APIRouter, Depends
-from sqlalchemy.exc import ArgumentError
+from sqlalchemy.exc import ArgumentError, IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.user import current_superuser
@@ -17,7 +17,8 @@ from app.api.endpoints.validater import (
     check_charity_project_exists,
     check_project_was_invested,
     check_project_was_closed,
-    check_project_name_donation_updata
+    check_project_name_donation_updata,
+    check_full_mount
 )
 
 router = APIRouter()
@@ -47,21 +48,19 @@ async def create_new_charity_project(
     await check_name_duplicate(
         charity_project.name, session
     )
+    await check_full_mount(
+        charity_project.full_amount
+    )
     new_charity_project = await charity_project_crud.create(
         charity_project, session
     )
-
-    try:
-        charity_project_crud.investment(
+    charity_project_crud.investment(
+        new_charity_project,
+        await charity_project_crud.get_not_invested_objects(
             new_charity_project,
-            await charity_project_crud.get_not_invested_objects(
-                new_charity_project,
-                session
-            )
+            session
         )
-    except ArgumentError:
-        await session.rollback()
-
+    )
     await session.commit()
     await session.refresh(new_charity_project)
     return new_charity_project

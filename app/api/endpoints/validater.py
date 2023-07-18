@@ -78,3 +78,13 @@ async def check_correct_donation(
             status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
             detail='Сумма пожертвований должна быть больше нуля'
         )
+
+
+async def check_full_mount(
+    project_full_mount: int
+) -> None:
+    if project_full_mount <= 0:
+        raise HTTPException(
+            status_code=HTTPStatus.UNPROCESSABLE_ENTITY,
+            detail='Сумма пожертвований должна быть больше нуля'
+        )
