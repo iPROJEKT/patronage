@@ -2,7 +2,6 @@ from datetime import datetime
 
 from typing import Optional
 from pydantic import BaseModel, Field, Extra
-from sqlalchemy.orm import validates
 
 from app.core.const import (
     MIN_LEGTH_PROJEKT,
