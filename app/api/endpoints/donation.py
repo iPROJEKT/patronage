@@ -36,7 +36,7 @@ async def get_my_donations(
     session: AsyncSession = Depends(get_async_session),
     user: User = Depends(current_user),
 ):
-    donations = await donation_crud.get_donations_by_user(
+    donations = await donation_crud.get_by_user(
         session=session, user=user
     )
     return donations

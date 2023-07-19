@@ -57,7 +57,7 @@ class CRUDBase:
         return db_obj
 
     @staticmethod
-    async def get_donations_by_user(
+    async def get_by_user(
             session: AsyncSession,
             user: User
     ) -> List[Donation]:

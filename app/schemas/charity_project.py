@@ -9,13 +9,16 @@ from app.core.const import (
     START_INVERSED_AMOUNT,
     FROM_TIME,
     TO_TIME,
+    EXAMPLE_FULL_AMOUNT,
+    EXAMPLE_INVERSET_AMOUNT,
+    EXAMPLE_DESCRIPTION
 )
 
 
 class CharityProjectBase(BaseModel):
     name: str = Field(min_length=MIN_LEGTH_PROJEKT, max_length=MAX_LEGTH_PROJEKT)
-    description: str = Field(min_length=MIN_LEGTH_PROJEKT, example='На помощь бэкенд разрабам')
-    full_amount: int = Field(example=10000)
+    description: str = Field(min_length=MIN_LEGTH_PROJEKT, example=EXAMPLE_DESCRIPTION)
+    full_amount: int = Field(example=EXAMPLE_FULL_AMOUNT)
 
     class Config:
         extra = Extra.forbid
@@ -23,7 +26,7 @@ class CharityProjectBase(BaseModel):
 
 class CharityProjectBD(CharityProjectBase):
     id: int
-    invested_amount: int = Field(START_INVERSED_AMOUNT, example=100)
+    invested_amount: int = Field(START_INVERSED_AMOUNT, example=EXAMPLE_INVERSET_AMOUNT)
     fully_invested: bool
     create_date: datetime = Field(example=FROM_TIME)
     close_date: Optional[datetime] = Field(example=TO_TIME)
@@ -38,8 +41,8 @@ class CharityProjectCreate(CharityProjectBase):
 
 class CharityProjectUpdate(CharityProjectBase):
     name: Optional[str] = Field(None, min_length=MIN_LEGTH_PROJEKT, max_length=MAX_LEGTH_PROJEKT)
-    description: Optional[str] = Field(None, min_length=MIN_LEGTH_PROJEKT, example='На помощь бэкенд разрабам')
-    full_amount: Optional[int] = Field(None, example=10000)
+    description: Optional[str] = Field(None, min_length=MIN_LEGTH_PROJEKT, example=EXAMPLE_DESCRIPTION)
+    full_amount: Optional[int] = Field(None, example=EXAMPLE_FULL_AMOUNT)
 
     class Config:
         extra = Extra.forbid
