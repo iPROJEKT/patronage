@@ -17,7 +17,7 @@ APP_AUTHOR= Автор
 AUTHOR_PASS= Пароль
 DEADLINE_DATE= Время
 DATABASE_URL= База (sqlite+aiosqlite:///./fastapi.db)
-secret= Секрет
+SECRET = Секрет
 FIRST_SUPERUSER_EMAIL= Имя супер юзера
-first_superuser_password=Пароль от супер юзера
+FIRST_SUPERUSER_PASSWORD = Пароль от супер юзера
 ```
