@@ -21,3 +21,5 @@ SECRET = Секрет
 FIRST_SUPERUSER_EMAIL= Имя супер юзера
 FIRST_SUPERUSER_PASSWORD = Пароль от супер юзера
 ```
+
+### python + FastAPI + SQLAlchemy
