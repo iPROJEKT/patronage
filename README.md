@@ -13,11 +13,11 @@
 Зарегистрированные пользователи могут отправлять пожертвования и просматривать список своих пожертвований.
 ### Пример env
 \```
-APP_AUTHOR= Автор
-AUTHOR_PASS= Пароль
-DEADLINE_DATE= Время
-DATABASE_URL= База (sqlite+aiosqlite:///./fastapi.db)
-secret= Секрет
-FIRST_SUPERUSER_EMAIL= Имя супер юзера
-first_superuser_password=Пароль от супер юзера
-\``
+  APP_AUTHOR= Автор
+  AUTHOR_PASS= Пароль
+  DEADLINE_DATE= Время
+  DATABASE_URL= База (sqlite+aiosqlite:///./fastapi.db)
+  secret= Секрет
+  FIRST_SUPERUSER_EMAIL= Имя супер юзера
+  first_superuser_password=Пароль от супер юзера
+\```
