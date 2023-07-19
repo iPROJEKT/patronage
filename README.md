@@ -11,4 +11,4 @@
 Любой пользователь может видеть список всех проектов, включая требуемые и уже внесенные суммы. Это касается всех проектов — и открытых, и закрытых.
 Зарегистрированные пользователи могут отправлять пожертвования и просматривать список своих пожертвований.
 
-![Photo QRKot]([https://www.example.com/image.jpg](https://pictures.s3.yandex.net/resources/sprint2_picture1_1672399951.png)https://pictures.s3.yandex.net/resources/sprint2_picture1_1672399951.png)
+
