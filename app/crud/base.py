@@ -1,9 +1,14 @@
 from typing import List
+from typing import Optional
 
+from fastapi import Depends
+from app.core.db import get_async_session
+from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from typing import Optional
+
 from app.models.user import User
+from app.models.charity_project import CharityProject
 from app.models.donation import Donation
 
 
@@ -67,3 +72,38 @@ class CRUDBase:
             )
         )
         return donations.scalars().all()
+
+    @staticmethod
+    async def update(
+            db_obj,
+            obj_in,
+            session: AsyncSession,
+    ):
+        obj_data = jsonable_encoder(db_obj)
+        update_data = obj_in.dict(exclude_unset=True)
+
+        for field in obj_data:
+            if field in update_data:
+                setattr(db_obj, field, update_data[field])
+        session.add(db_obj)
+        await session.commit()
+        await session.refresh(db_obj)
+        return db_obj
+
+    @staticmethod
+    async def get_charity_project_id_by_name(
+            project_name: str,
+            session: AsyncSession
+    ) -> Optional[int]:
+        charity_project = await session.execute(
+            select(CharityProject.id).where(
+                CharityProject.name == project_name
+            )
+        )
+        return charity_project.scalars().first()
+
+    @staticmethod
+    async def save(
+            s: AsyncSession = Depends(get_async_session),
+    ):
+        await s.commit()

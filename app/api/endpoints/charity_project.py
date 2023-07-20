@@ -19,6 +19,7 @@ from app.api.endpoints.validater import (
     check_project_name_donation_updata,
     check_full_mount
 )
+from app.core.services import investment
 
 router = APIRouter()
 
@@ -53,7 +54,7 @@ async def create_new_charity_project(
     new_charity_project = await charity_project_crud.create(
         charity_project, session
     )
-    charity_project_crud.investment(
+    investment(
         new_charity_project,
         await charity_project_crud.get_not_invested_objects(
             new_charity_project,

@@ -10,6 +10,7 @@ from app.crud.donation import donation_crud
 from app.schemas.donation import DonationDB, DonationCreate
 from app.models.user import User
 from app.api.endpoints.validater import check_correct_donation
+from app.core.services import investment
 
 
 router = APIRouter()
@@ -57,7 +58,7 @@ async def create_new_donation(
     new_donation = await donation_crud.create(
         donation, session, user
     )
-    charity_project_crud.investment(
+    investment(
         new_donation,
         await charity_project_crud.get_not_invested_objects(
             new_donation,
