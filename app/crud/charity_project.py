@@ -21,7 +21,7 @@ class CRUDCharityProject(CRUDBase):
             select(
                 model
             ).where(
-                model.fully_invested == 0
+                model.fully_invested == False
             ).order_by(
                 model.create_date
             )

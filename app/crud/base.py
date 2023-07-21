@@ -101,9 +101,3 @@ class CRUDBase:
             )
         )
         return charity_project.scalars().first()
-
-    @staticmethod
-    async def save(
-            s: AsyncSession = Depends(get_async_session),
-    ):
-        await s.commit()
