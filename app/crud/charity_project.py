@@ -2,6 +2,7 @@ from typing import List, Union
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy.sql.expression import false
 
 from app.crud.base import CRUDBase
 from app.models.charity_project import CharityProject
@@ -21,7 +22,7 @@ class CRUDCharityProject(CRUDBase):
             select(
                 model
             ).where(
-                model.fully_invested == False
+                 model.fully_invested == false()
             ).order_by(
                 model.create_date
             )
