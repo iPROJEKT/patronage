@@ -1,8 +1,6 @@
 from typing import List
 from typing import Optional
 
-from fastapi import Depends
-from app.core.db import get_async_session
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
