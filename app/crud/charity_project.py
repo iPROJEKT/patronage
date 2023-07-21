@@ -22,7 +22,7 @@ class CRUDCharityProject(CRUDBase):
             select(
                 model
             ).where(
-                 model.fully_invested == false()
+                model.fully_invested == false()
             ).order_by(
                 model.create_date
             )
